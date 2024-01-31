@@ -9,6 +9,10 @@
   } @ inputs:
     std.growOn {
       inherit inputs;
+      systems = [
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
       cellsFrom = ./nix;
       cellBlocks = with std.blockTypes; [
         (installables "packages" {ci.build = true;})
