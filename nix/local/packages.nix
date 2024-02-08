@@ -86,10 +86,28 @@ with inputs.nixpkgs; let
       done
     '';
   };
+  junod_20_0_0 = buildGoModule rec {
+    pname = "junod";
+    version = "20.0.0";
+    src = fetchurl {
+      url = "https://github.com/CosmosContracts/juno/archive/refs/tags/v${version}.tar.gz";
+      sha256 = "sha256-Mjk7qNltAf3WFMb+VKfI/B7t5j85JlAE8E0WOKlm3h0=";
+    };
+    vendorHash = "sha256-gVdB0qjArLGI+HJgymrHBjbb10olUDqNbG/xKpVpfHM=";
+    subPackages = "cmd/junod";
+    buildInputs = [libwasmvm_1_5_2];
+    postInstall = ''
+      for f in "$out"/bin/*; do
+        local nrp="$(patchelf --print-rpath "$f" | sed -E 's@(:|^)'$NIX_BUILD_TOP'[^:]*:@\1@g')"
+        patchelf --set-rpath "$nrp" "$f"
+      done
+    '';
+  };
 in {
   inherit libwasmvm_1_5_1;
   inherit libwasmvm_1_5_2;
   inherit junod_18_1_0;
   inherit junod_19_0_0;
   inherit junod_19_1_0;
+  inherit junod_20_0_0;
 }
