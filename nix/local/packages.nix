@@ -1,6 +1,13 @@
 with inputs.nixpkgs; let
   arch = lib.removeSuffix "-linux" system;
 
+  postInstall = ''
+    for f in "$out"/bin/*; do
+      local nrp="$(patchelf --print-rpath "$f" | sed -E 's@(:|^)'$NIX_BUILD_TOP'[^:]*:@\1@g')"
+      patchelf --set-rpath "$nrp" "$f"
+    done
+  '';
+
   libwasmvm_1_5_1 = stdenv.mkDerivation rec {
     pname = "libwasmvm";
     version = "1.5.1";
@@ -45,12 +52,7 @@ with inputs.nixpkgs; let
     vendorHash = "sha256-p4lWDRrmXOmB1x99f5/jHBKm3E1xbGowjIJs17gLIzI=";
     subPackages = "cmd/junod";
     buildInputs = [libwasmvm_1_5_1];
-    postInstall = ''
-      for f in "$out"/bin/*; do
-        local nrp="$(patchelf --print-rpath "$f" | sed -E 's@(:|^)'$NIX_BUILD_TOP'[^:]*:@\1@g')"
-        patchelf --set-rpath "$nrp" "$f"
-      done
-    '';
+    inherit postInstall;
   };
   junod_19_0_0 = buildGoModule rec {
     pname = "junod";
@@ -62,12 +64,7 @@ with inputs.nixpkgs; let
     vendorHash = "sha256-gVdB0qjArLGI+HJgymrHBjbb10olUDqNbG/xKpVpfHM=";
     subPackages = "cmd/junod";
     buildInputs = [libwasmvm_1_5_2];
-    postInstall = ''
-      for f in "$out"/bin/*; do
-        local nrp="$(patchelf --print-rpath "$f" | sed -E 's@(:|^)'$NIX_BUILD_TOP'[^:]*:@\1@g')"
-        patchelf --set-rpath "$nrp" "$f"
-      done
-    '';
+    inherit postInstall;
   };
   junod_19_1_0 = buildGoModule rec {
     pname = "junod";
@@ -79,12 +76,7 @@ with inputs.nixpkgs; let
     vendorHash = "sha256-gVdB0qjArLGI+HJgymrHBjbb10olUDqNbG/xKpVpfHM=";
     subPackages = "cmd/junod";
     buildInputs = [libwasmvm_1_5_2];
-    postInstall = ''
-      for f in "$out"/bin/*; do
-        local nrp="$(patchelf --print-rpath "$f" | sed -E 's@(:|^)'$NIX_BUILD_TOP'[^:]*:@\1@g')"
-        patchelf --set-rpath "$nrp" "$f"
-      done
-    '';
+    inherit postInstall;
   };
   junod_20_0_0 = buildGoModule rec {
     pname = "junod";
@@ -96,12 +88,19 @@ with inputs.nixpkgs; let
     vendorHash = "sha256-gVdB0qjArLGI+HJgymrHBjbb10olUDqNbG/xKpVpfHM=";
     subPackages = "cmd/junod";
     buildInputs = [libwasmvm_1_5_2];
-    postInstall = ''
-      for f in "$out"/bin/*; do
-        local nrp="$(patchelf --print-rpath "$f" | sed -E 's@(:|^)'$NIX_BUILD_TOP'[^:]*:@\1@g')"
-        patchelf --set-rpath "$nrp" "$f"
-      done
-    '';
+    inherit postInstall;
+  };
+  junod_21_0_0 = buildGoModule rec {
+    pname = "junod";
+    version = "21.0.0";
+    src = fetchurl {
+      url = "https://github.com/CosmosContracts/juno/archive/refs/tags/v${version}.tar.gz";
+      sha256 = "sha256-FsuXf/O3QpmgHMvQurA8ZuMisYePvAStXvXoyH6wPps=";
+    };
+    vendorHash = "sha256-Z5I16c/qRTmJJzAjQp6vmUrSd2F+RV13UYHHnLnhFcE=";
+    subPackages = "cmd/junod";
+    buildInputs = [libwasmvm_1_5_2];
+    inherit postInstall;
   };
 in {
   inherit libwasmvm_1_5_1;
@@ -110,4 +109,5 @@ in {
   inherit junod_19_0_0;
   inherit junod_19_1_0;
   inherit junod_20_0_0;
+  inherit junod_21_0_0;
 }
