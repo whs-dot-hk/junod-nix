@@ -102,7 +102,7 @@ with inputs.nixpkgs; let
     buildInputs = [libwasmvm_1_5_2];
     inherit postInstall;
   };
-  junod_22_0_0 = buildGo122Module rec {
+  junod_22_0_0 = buildGoModule rec {
     pname = "junod";
     version = "22.0.0";
     src = fetchurl {
