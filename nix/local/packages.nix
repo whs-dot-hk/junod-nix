@@ -114,6 +114,18 @@ with inputs.nixpkgs; let
     buildInputs = [libwasmvm_1_5_2];
     inherit postInstall;
   };
+  junod_22_0_1 = buildGoModule rec {
+    pname = "junod";
+    version = "22.0.1";
+    src = fetchurl {
+      url = "https://github.com/CosmosContracts/juno/archive/refs/tags/v${version}.tar.gz";
+      sha256 = "sha256-zgTcdUImhc2ZUQyUZ3MdxbcWH1Z99rP3FFc2Iuc3T70=";
+    };
+    vendorHash = "sha256-5TTW7ftC5bQgdKOQJtmAQ8GyAuAtTmeFIl+hh12WX4M=";
+    subPackages = "cmd/junod";
+    buildInputs = [libwasmvm_1_5_2];
+    inherit postInstall;
+  };
 in {
   inherit libwasmvm_1_5_1;
   inherit libwasmvm_1_5_2;
@@ -123,4 +135,5 @@ in {
   inherit junod_20_0_0;
   inherit junod_21_0_0;
   inherit junod_22_0_0;
+  inherit junod_22_0_1;
 }
