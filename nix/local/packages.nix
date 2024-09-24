@@ -59,6 +59,23 @@ with inputs.nixpkgs; let
       cp $src $out/lib/libwasmvm.${arch}.so
     '';
   };
+  libwasmvm_1_5_5 = stdenv.mkDerivation rec {
+    pname = "libwasmvm";
+    version = "1.5.5";
+    src = fetchurl {
+      url = "https://github.com/CosmWasm/wasmvm/releases/download/v${version}/libwasmvm.${arch}.so";
+      sha256 =
+        if arch == "x86_64"
+        then "sha256-yqozWJzGsCStJHZ3HGUHoSQkfui6EKstmxtiAW4KoyE="
+        else "sha256-ibF+okvXaWPa45DNkXHjlKAnYWO1gaQqO3dczWjv5rc=";
+    };
+    dontBuild = true;
+    dontUnpack = true;
+    installPhase = ''
+      mkdir -p $out/lib
+      cp $src $out/lib/libwasmvm.${arch}.so
+    '';
+  };
   junod_18_1_0 = buildGoModule rec {
     pname = "junod";
     version = "18.1.0";
@@ -179,10 +196,23 @@ with inputs.nixpkgs; let
     buildInputs = [libwasmvm_1_5_4];
     inherit postInstall;
   };
+  junod_25_0_0 = buildGoModule rec {
+    pname = "junod";
+    version = "25.0.0";
+    src = fetchurl {
+      url = "https://github.com/CosmosContracts/juno/archive/refs/tags/v${version}.tar.gz";
+      sha256 = "sha256-ElU53nRQXagFSSiICRiSICjasoDNdt73xqe2TW++9sc=";
+    };
+    vendorHash = "sha256-HDHsBuuJ+ta3ynYv8NVqEdd0h4UNWBelUA8j+YoEf4E=";
+    subPackages = "cmd/junod";
+    buildInputs = [libwasmvm_1_5_5];
+    inherit postInstall;
+  };
 in {
   inherit libwasmvm_1_5_1;
   inherit libwasmvm_1_5_2;
   inherit libwasmvm_1_5_4;
+  inherit libwasmvm_1_5_5;
   inherit junod_18_1_0;
   inherit junod_19_0_0;
   inherit junod_19_1_0;
@@ -193,4 +223,5 @@ in {
   inherit junod_23_0_0;
   inherit junod_23_1_0;
   inherit junod_24_0_0;
+  inherit junod_25_0_0;
 }
