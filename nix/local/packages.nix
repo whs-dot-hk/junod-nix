@@ -1,6 +1,5 @@
 with inputs.nixpkgs; let
-  #arch = lib.removeSuffix "-linux" system;
-  arch = "aarch64";
+  arch = lib.removeSuffix "-linux" system;
 
   postInstall = ''
     for f in "$out"/bin/*; do
