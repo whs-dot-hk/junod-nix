@@ -6,12 +6,12 @@ with inputs.nixpkgs; let
     done
   '';
 
-  libwasmvm_2_2_2 = stdenv.mkDerivation rec {
+  libwasmvm_1_5_8 = stdenv.mkDerivation rec {
     pname = "libwasmvm";
-    version = "2.2.2";
+    version = "1.5.8";
     src = fetchurl {
+      sha256 = "sha256-xFgTY+tvSrKrpfgLBfuUDd7Jkp7LzX/0vgxSGpPsfo4=";
       url = "https://github.com/CosmWasm/wasmvm/releases/download/v${version}/libwasmvm.x86_64.so";
-      sha256 = "sha256-xtVXsOrNX+vlNWuxyh0JhJzjXbH5+tTvMQL5uslv8NY=";
     };
     dontBuild = true;
     dontUnpack = true;
@@ -20,12 +20,38 @@ with inputs.nixpkgs; let
       cp $src $out/lib/libwasmvm.x86_64.so
     '';
   };
+  libwasmvm_2_2_2 = stdenv.mkDerivation rec {
+    pname = "libwasmvm";
+    version = "2.2.2";
+    src = fetchurl {
+      sha256 = "sha256-xtVXsOrNX+vlNWuxyh0JhJzjXbH5+tTvMQL5uslv8NY=";
+      url = "https://github.com/CosmWasm/wasmvm/releases/download/v${version}/libwasmvm.x86_64.so";
+    };
+    dontBuild = true;
+    dontUnpack = true;
+    installPhase = ''
+      mkdir -p $out/lib
+      cp $src $out/lib/libwasmvm.x86_64.so
+    '';
+  };
+  junod_27_0_0 = buildGoModule rec {
+    pname = "junod";
+    version = "27.0.0";
+    src = fetchurl {
+      sha256 = "sha256-Enwi9ixFgj5HaDegQUHp68+wOzdKrwHHe4lYltmY0Zk=";
+      url = "https://github.com/CosmosContracts/juno/archive/refs/tags/v${version}.tar.gz";
+    };
+    vendorHash = "sha256-Iwifl3Rlc+PaYNywz2cnIv/S5b6GuPzamSAYGcrkpRo=";
+    subPackages = "cmd/junod";
+    buildInputs = [libwasmvm_1_5_8];
+    inherit postInstall;
+  };
   junod_28_0_2 = buildGoModule rec {
     pname = "junod";
     version = "28.0.2";
     src = fetchurl {
-      url = "https://github.com/CosmosContracts/juno/archive/refs/tags/v${version}.tar.gz";
       sha256 = "sha256-K5KziwhRlBjZPQF+MoW5jQdXIhxQWcxjG2HFgZfEiHE=";
+      url = "https://github.com/CosmosContracts/juno/archive/refs/tags/v${version}.tar.gz";
     };
     vendorHash = "sha256-Fd1o4vt9Q0Oc2DT4Yh8A1QM0lqfoBhDggOopvrDkr44=";
     subPackages = "cmd/junod";
@@ -33,6 +59,8 @@ with inputs.nixpkgs; let
     inherit postInstall;
   };
 in {
+  inherit libwasmvm_1_5_8;
   inherit libwasmvm_2_2_2;
+  inherit junod_27_0_0;
   inherit junod_28_0_2;
 }
