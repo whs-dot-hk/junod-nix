@@ -53,9 +53,25 @@ with inputs.nixpkgs; let
     dontPatchELF = true;
     inherit postFixup;
   };
+  junod_29_0_0 = stdenv.mkDerivation rec {
+    pname = "junod";
+    version = "29.0.0";
+    src = fetchurl {
+      url = "https://github.com/CosmosContracts/juno/releases/download/v${version}/junod";
+      sha256 = "sha256-DehLzGTIKPNVjfdX1Np2+ZzExXFr4+dZR92/lm+5cCA=";
+    };
+    dontUnpack = true;
+    dontBuild = true;
+    dontConfigure = true;
+    dontInstall = true;
+    dontPatch = true;
+    dontPatchELF = true;
+    inherit postFixup;
+  };
 in {
   inherit libwasmvm_1_5_8;
   inherit libwasmvm_2_2_2;
   inherit junod_27_0_0;
   inherit junod_28_0_2;
+  inherit junod_29_0_0;
 }
